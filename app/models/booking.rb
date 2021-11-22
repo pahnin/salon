@@ -8,6 +8,6 @@ class Booking < ApplicationRecord
     raise ActiveRecord::RecordInvalid if slots.select { |x| !x.draft? || x.booking_id.present?  }.any?
     raise ActiveRecord::RecordInvalid if service.no_of_slots != slots.size
 
-    slots.update_all(booking_id: self.id, status: Slot.statuses[:confirmed]) if slots.draft.all?
+    slots.update_all(booking_id: self.id, status: Slot.statuses[:confirmed])
   end
 end
