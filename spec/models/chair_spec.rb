@@ -42,7 +42,6 @@ RSpec.describe Chair, type: :model do
     )
   }
 
-
   context "when data is valid" do
     it "should create a chair with a barber name" do
       expect {

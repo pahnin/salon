@@ -45,7 +45,7 @@ RSpec.describe Service, type: :model do
   let(:valid_service1) { { name: "shave", cost: 50 } }
 
   context "when data is valid" do
-    it "should create a company" do
+    it "should create a service" do
       expect {
         example_company.services.create!(valid_service1)
       }.to change { Service.count }.from(0).to(1)
