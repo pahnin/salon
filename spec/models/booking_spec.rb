@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Slot, type: :model do
+RSpec.describe Booking, type: :model do
   let(:example_company) {
     Company.create(
       {
@@ -44,47 +44,46 @@ RSpec.describe Slot, type: :model do
 
   let(:empty_chair) { example_company.chairs.create! }
   let(:hair_cut) { example_company.services.create!(name: "Hair Cut", cost: 100) }
-  let(:valid_slot) { { start_time: "09:00 AM" } }
+  let(:open_slot) { empty_chair.slots.create!(start_time: "09:00 AM") }
 
   context "when data is valid" do
-    it "should create a slot" do
+    it "should create a booking" do
       expect {
-        empty_chair.slots.create!(valid_slot)
-      }.to change { Slot.count }.from(0).to(1)
+        Booking.create!(service: hair_cut, chair: empty_chair)
+      }.to change { Booking.count }.from(0).to(1)
     end
   end
 
   context "when data is invalid" do
-    it "should raise a validation error if chair is not present" do
+    it "should raise a validation error if service is not given" do
       expect {
-        Slot.create!(valid_slot)
+        Booking.create!(chair: empty_chair)
       }.to raise_error ActiveRecord::RecordInvalid
     end
 
-    it "should raise validation error if start_time is not present" do
+    it "should raise a validation error if chair is not given" do
       expect {
-        empty_chair.slots.create!
+        Booking.create!(service: hair_cut)
       }.to raise_error ActiveRecord::RecordInvalid
     end
+  end
 
-    it "should raise validation error if start_time is not in 30 mins format" do
-      expect {
-        empty_chair.slots.create!(start_time: "09:15 AM")
-      }.to raise_error ActiveRecord::RecordInvalid
 
-      expect {
-        empty_chair.slots.create!(start_time: "09:35 AM")
-      }.to raise_error ActiveRecord::RecordInvalid
+  describe "#allocate_slots" do
+    let(:booking) { Booking.create!(service: hair_cut, chair: empty_chair) }
 
+    it "allocates open slots to the booking" do
       expect {
-        empty_chair.slots.create!(start_time: "09:30 AM")
-      }.to_not raise_error
+        booking.allocate_slots(Slot.where(id: open_slot.id))
+      }.to change { open_slot.reload.booking_id }.to(booking.id)
     end
 
-    it "should raise validation error if the chair already has a slot in given start_time" do
-      empty_chair.slots.create!(valid_slot)
+    it "doesnt allocates slots already booked" do
+      booking.allocate_slots(Slot.where(id: open_slot.id))
+
+      new_booking = Booking.create!(service: hair_cut, chair: empty_chair)
       expect {
-        empty_chair.slots.create!(valid_slot)
+        booking.allocate_slots(Slot.where(id: open_slot.id))
       }.to raise_error ActiveRecord::RecordInvalid
     end
   end
