@@ -1,6 +1,6 @@
 class Slot < ApplicationRecord
   belongs_to :chair
-  belongs_to :service, required: false
+  belongs_to :booking, required: false
 
   validates :start_time, presence: true, uniqueness: { scope: :chair_id }
   validate :time_lines
