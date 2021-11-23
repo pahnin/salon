@@ -1,24 +1,10 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+To generate test data
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* docker-compose up --build
+* docker-compose run salon_app bundle exec rake db:migrate
+* docker-compose run salon_app bundle exec rake db:seed
+* docker-compose run salon_app bundle exec rake clean_slots:for_today
+* docker-compose run salon_app bundle exec rake generate_slots:for_today
+* docker-compose up
